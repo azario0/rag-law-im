@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tertamonia Legal Query System</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Tertamonia Legal Query System</h1>
+        <form action="/" method="post">
+            <div class="form-group">
+                <label for="query">Enter your legal query:</label>
+                <textarea class="form-control" id="query" name="query" rows="4" required>{{ request.form.query }}</textarea>
+            </div>
+            <div class="form-group">
+                <label>Choose Mode:</label>
+                <div>
+                    <input type="radio" name="mode" value="with_memory" {% if mode == 'with_memory' %}checked{% endif %}> With Memory<br>
+                    <input type="radio" name="mode" value="without_memory" {% if mode == 'without_memory' %}checked{% endif %}> Without Memory<br>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Submit Query</button>
+            {% if mode == 'with_memory' and session.get('history') %}
+                <button type="button" class="btn btn-secondary btn-block" onclick="location.href='/clear_history'">Clear Conversation History</button>
+            {% endif %}
+        </form>
+        {% if response %}
+            <h2>Response</h2>
+            <p><strong>Your Query:</strong> {{ request.form.query }}</p>
+            <p><strong>Assistant's Response:</strong></p>
+            <p>{{ response }}</p>
+            <h3>Retrieved Laws:</h3>
+            <ul>
+                {% for law in retrieved_laws %}
+                <li>{{ law }}</li>
+                {% endfor %}
+            </ul>
+            {% if mode == 'with_memory' %}
+                <h2>Conversation History</h2>
+                <div>
+                    {% for message in session.history %}
+                        <p><strong>{{ message.role.capitalize() }}:</strong> {{ message.content }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
